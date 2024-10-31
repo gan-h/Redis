@@ -52,6 +52,12 @@ void do_something(int fd)
     std::cout << rbuf << std::endl;
 }
 
+int one_request(int fd)
+{
+    // Messages consist of a sequence of fixed-length bytes
+    // 4 byte big endian integer, followed by the bytes, then another 4 byte big endian, followed by the bytes
+}
+
 int main()
 {
     // man tcp.7: How to create a TCP socket
@@ -63,7 +69,15 @@ int main()
         auto newConnection = s.acceptConnection();
         if (newConnection.second < 0)
             continue;
-        do_something(newConnection.second);
+
+        while (true)
+        {
+            // Serve the new connection
+            int32_t err = one_request(newConnection.second);
+            if (err)
+                break;
+        }
+
         close(newConnection.second);
     }
 }
